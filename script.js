@@ -224,13 +224,13 @@ let main = {
         type: 'b_pawn',
         moved: false
       },
-      b_pawn8: {
-        position: '8_7',
-        img: '&#9823;',
-        captured: false,
-        type: 'b_pawn',
-        moved: false
-      }
+      // b_pawn8: {
+      //   position: '8_7',
+      //   img: '&#9823;',
+      //   captured: false,
+      //   type: 'b_pawn',
+      //   moved: false
+      // }
 
     }
   },
