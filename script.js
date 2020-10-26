@@ -234,7 +234,7 @@ let main = {
 
     }
   },
-  
+
   methods: {
     gamesetup: function() {
       $('.gamecell').attr('chess', 'null');
@@ -717,6 +717,131 @@ let main = {
     },
 
   }
-
 };
 
+$(document).ready(function() {
+  main.methods.gamesetup();
+
+  $('.gamecell').click(function(e) {
+
+    var selectedpiece = {
+      name: '',
+      id: main.variables.selectedpiece
+    };
+
+    if (main.variables.selectedpiece == ''){
+      selectedpiece.name = $('#' + e.target.id).attr('chess');
+    } else {
+      selectedpiece.name = $('#' + main.variables.selectedpiece).attr('chess');
+    }
+
+    var target = {
+      name: $(this).attr('chess'),
+      id: e.target.id
+    };
+
+    if (main.variables.selectedpiece == '' && target.name.slice(0,1) == main.variables.turn) { // show options
+
+      // moveoptions
+      main.variables.selectedpiece = e.target.id;
+      main.methods.moveoptions($(this).attr('chess'));
+
+    } else if (main.variables.selectedpiece !='' && target.name == 'null') { // move selected piece piece
+
+      if (selectedpiece.name == 'w_king' || selectedpiece.name == 'b_king'){
+        
+        let t0 = (selectedpiece.name = 'w_king');
+        let t1 = (selectedpiece.name = 'b_king');
+        let t2 = (main.variables.pieces[selectedpiece.name].moved == false);
+        let t3 = (main.variables.pieces['b_rook2'].moved == false);
+        let t4 = (main.variables.pieces['w_rook2'].moved == false);
+        let t5 = (target.id == '7_8');
+        let t6 = (target.id == '7_1');
+  
+        if (t0 && t2 && t4 &&t6){ // castle w_king
+  
+          let k_position = '5_1';
+          let k_target = '7_1';
+          let r_position = '8_1';
+          let r_target = '6_1';
+  
+          main.variables.pieces['w_king'].position = '7_1';
+          main.variables.pieces['w_king'].moved = true;
+          $('#'+k_position).html('');
+          $('#'+k_position).attr('chess','null');
+          $('#'+k_target).html(main.variables.pieces['w_king'].img);
+          $('#'+k_target).attr('chess','w_king');
+  
+          main.variables.pieces['w_rook2'].position = '6_1';
+          main.variables.pieces['w_rook2'].moved = true;
+          $('#'+r_position).html('');
+          $('#'+r_position).attr('chess','null');
+          $('#'+r_target).html(main.variables.pieces['w_rook2'].img);
+          $('#'+r_target).attr('chess','w_rook2');
+  
+          main.methods.endturn();
+  
+        } else if (t1 && t2 && t3 && t5){ // castle b_king
+  
+          let k_position = '5_8';
+          let k_target = '7_8';
+          let r_position = '8_8';
+          let r_target = '6_8';
+  
+          // w_king
+          main.variables.pieces['b_king'].position = '7_8';
+          main.variables.pieces['b_king'].moved = true;
+          $('#'+k_position).html('');
+          $('#'+k_position).attr('chess','null');
+          $('#'+k_target).html(main.variables.pieces['b_king'].img);
+          $('#'+k_target).attr('chess','b_king');
+  
+          main.variables.pieces['b_rook2'].position = '6_8';
+          main.variables.pieces['b_rook2'].moved = true;
+          $('#'+r_position).html('');
+          $('#'+r_position).attr('chess','null');
+          $('#'+r_target).html(main.variables.pieces['b_rook2'].img);
+          $('#'+r_target).attr('chess','b_rook2');
+  
+          main.methods.endturn();
+          
+        } else { // move selectedpiece
+          main.methods.move(target);
+          main.methods.endturn();
+        }
+  
+      } else { // else if selecedpiece.name is not white/black king than move
+
+        main.methods.move(target);
+        main.methods.endturn();
+
+      }
+        
+    } else if (main.variables.selectedpiece !='' && target.name != 'null' && target.id != selectedpiece.id && selectedpiece.name.slice(0,1) != target.name.slice(0,1)){ // capture a piece
+      
+      if (selectedpiece.id != target.id && main.variables.highlighted.indexOf(target.id) != (-1)) { // if it's not trying to capture pieces not in its movement range
+        
+        // capture
+        main.methods.capture(target)
+        main.methods.endturn();
+        
+      }
+
+    } else if (main.variables.selectedpiece !='' && target.name != 'null' && target.id != selectedpiece.id && selectedpiece.name.slice(0,1) == target.name.slice(0,1)){ // toggle move options
+
+      // toggle
+      main.methods.togglehighlight(main.variables.highlighted);
+      main.variables.highlighted.length = 0;
+
+      main.variables.selectedpiece = target.id;
+      main.methods.moveoptions(target.name);
+
+    }
+
+  });
+
+  $('body').contextmenu(function(e) {
+    e.preventDefault();
+  });
+
+});
